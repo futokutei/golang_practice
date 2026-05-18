@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// Допоміжні структури для тестів
 type User struct {
 	Name    string   `json:"user_name"`
 	Age     int      `json:"age"`
@@ -14,11 +13,10 @@ type User struct {
 }
 
 type SimpleStruct struct {
-	Title string // без json тегу
+	Title string
 }
 
 func TestToYAML(t *testing.T) {
-	// Описуємо структуру тестового кейсу
 	tests := []struct {
 		name    string
 		input   any
@@ -68,20 +66,13 @@ func TestToYAML(t *testing.T) {
 			wantErr: true,
 		},
 	}
-
-	// Запуск табличних тестів
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ToYAML(tt.input)
-
-			// Перевірка на наявність помилки
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ToYAML() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-
-			// Оскільки у слайсах наприкінці додається заварочний новий рядок (\n),
-			// для надійності порівняння можна обрізати зайві пробіли/переноси з обох боків.
 			if strings.TrimSpace(got) != strings.TrimSpace(tt.want) {
 				t.Errorf("ToYAML() \ngot:  %q\nwant: %q", got, tt.want)
 			}

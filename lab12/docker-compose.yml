@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  nats:
+    image: nats:2.10-alpine
+    ports:
+      - "4222:4222"
+
+  filter-service:
+    image: golang:1.26-alpine
+    restart: on-failure
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: go run filter-service/main.go
+    environment:
+      - NATS_URL=nats://nats:4222
+      - GOLOG_FORCE_TTY=1
+    depends_on:
+      - nats
+
+  square-service:
+    image: golang:1.26-alpine
+    restart: on-failure
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: go run square-service/main.go
+    environment:
+      - NATS_URL=nats://nats:4222
+      - GOLOG_FORCE_TTY=1
+    depends_on:
+      - nats
+
+  sum-service:
+    image: golang:1.26-alpine
+    restart: on-failure
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: go run sum-service/main.go
+    environment:
+      - NATS_URL=nats://nats:4222
+      - GOLOG_FORCE_TTY=1
+    depends_on:
+      - nats
+
+  generator-service:
+    image: golang:1.26-alpine
+    restart: on-failure
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: go run generator-service/main.go
+    environment:
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - nats
+      - filter-service
+      - square-service
+      - sum-service
